@@ -29,7 +29,7 @@ jobs:
       - name: Checkout Obsidian vault
         uses: actions/checkout@v4
         with:
-          repository: YOUR_GITHUB_USERNAME/obsidian-vault
+          repository: Random-Coder-Dude/Obsidian-Vault
           path: vault
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
