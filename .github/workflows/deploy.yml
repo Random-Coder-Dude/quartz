@@ -3,7 +3,7 @@ name: Deploy Quartz site to GitHub Pages
 on:
   push:
     branches:
-      - v4
+      - main  # branch of your Obsidian vault repo
 
 permissions:
   contents: read
@@ -16,33 +16,57 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      # Checkout Quartz repo (this repo)
+      - name: Checkout Quartz repo
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      # Checkout your Obsidian vault repo
+      - name: Checkout Obsidian vault
+        uses: actions/checkout@v4
+        with:
+          repository: YOUR_GITHUB_USERNAME/obsidian-vault
+          path: vault
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      # Sync vault content into Quartz content folder
+      - name: Sync vault into content
+        run: |
+          rm -rf content
+          mkdir content
+          cp -a vault/. content/
+
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Install Dependencies
+      # Install Quartz dependencies
+      - name: Install dependencies
         run: npm install
 
+      # Build Quartz site
       - name: Build Quartz
         run: npx quartz build
 
+      # Upload artifact for GitHub Pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: public
+          path: public  # Quartz v4 outputs to public/
 
   deploy:
     needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
