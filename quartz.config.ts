@@ -19,10 +19,7 @@ const config: QuartzConfig = {
     baseUrl: "quartz.jzhao.xyz",
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "modified",
-    
-    // <<< Add this line
-    home: "Main.md", // <-- Use Main.md as the root page
-    
+    home: "Main.md", // Use Main.md as the root page
     theme: {
       fontOrigin: "googleFonts",
       cdnCaching: true,
@@ -79,7 +76,11 @@ const config: QuartzConfig = {
     ],
     filters: [Plugin.RemoveDrafts()],
     emitters: [
-      Plugin.AliasRedirects(),
+      Plugin.AliasRedirects({
+        aliases: [
+          { from: "/", to: "/Main" }, // Redirect root URL to Main.md
+        ],
+      }),
       Plugin.ComponentResources(),
       Plugin.ContentPage(),
       Plugin.FolderPage(),
